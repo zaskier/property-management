@@ -48,6 +48,10 @@ describe('App E2E', () => {
   };
 
   beforeAll(async () => {
+    // Provide dummy env vars for CI where .env is missing
+    process.env.WEATHER_API_KEY = 'dummy-key';
+    process.env.WEATHER_API_URL = 'http://dummy-url';
+
     mockTypeormRepo = {
       create: jest.fn(),
       save: jest.fn(),
@@ -62,7 +66,9 @@ describe('App E2E', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    if (app) {
+      await app.close();
+    }
   });
 
   it('Mutation createProperty should call service and return property with nested typed weather', async () => {
