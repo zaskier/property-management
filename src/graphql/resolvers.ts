@@ -2,6 +2,7 @@ import { PropertyService } from '../services/PropertyService.js';
 import { IResolvers } from 'mercurius';
 import { GraphQLJSON } from 'graphql-type-json';
 import { formatToISO8601 } from '../utils/date.js';
+import { mapWeatherResponse } from '../utils/weatherMapper.js';
 
 let propertyService: PropertyService;
 
@@ -15,7 +16,8 @@ const getPropertyService = (config: any) => {
 export const resolvers: IResolvers = {
   JSON: GraphQLJSON,
   Property: {
-    createdAt: (parent: { createdAt: Date | string | number }) => formatToISO8601(parent.createdAt)
+    createdAt: (parent: { createdAt: Date | string | number }) => formatToISO8601(parent.createdAt),
+    weather: (parent: { weather: any }) => mapWeatherResponse(parent.weather)
   },
   Query: {
     properties: async (_parent, { sortBy, order, city, zipCode, state }, context) => {
