@@ -1,4 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, Index } from 'typeorm';
+import { RawWeatherData } from '../types/weather.js';
 
 @Entity('property')
 export class Property {
@@ -19,14 +20,13 @@ export class Property {
   zipCode: string;
 
   @Column({ type: 'jsonb', nullable: true })
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  weather: any;
+  weather: RawWeatherData | null;
 
   @Column({ type: 'decimal', precision: 10, scale: 7, nullable: true })
-  lat: number;
+  lat: number | null;
 
   @Column({ type: 'decimal', precision: 10, scale: 7, nullable: true })
-  long: number;
+  long: number | null;
 
   @Index()
   @CreateDateColumn()
