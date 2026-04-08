@@ -5,7 +5,7 @@
  */
 export const formatToISO8601 = (date: Date | string | number): string => {
   if (!date) return String(date);
-  
+
   if (date instanceof Date) {
     return date.toISOString();
   }

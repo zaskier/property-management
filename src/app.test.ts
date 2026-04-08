@@ -39,7 +39,13 @@ const { AppDataSource } = await import('./database/data-source.js');
 
 describe('App E2E', () => {
   let app: FastifyInstance;
-  let mockTypeormRepo: any;
+  let mockTypeormRepo: {
+    create: jest.Mock;
+    save: jest.Mock;
+    findOneBy: jest.Mock;
+    delete: jest.Mock;
+    createQueryBuilder: jest.Mock;
+  };
 
   beforeAll(async () => {
     mockTypeormRepo = {

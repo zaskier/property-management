@@ -10,7 +10,7 @@ describe('WeatherstackService', () => {
   };
 
   beforeEach(() => {
-    global.fetch = jest.fn() as any;
+    global.fetch = jest.fn() as unknown as typeof fetch;
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(console, 'warn').mockImplementation(() => {});
     service = new WeatherstackService(mockConfig);
@@ -29,7 +29,7 @@ describe('WeatherstackService', () => {
     (global.fetch as jest.Mock).mockResolvedValue({
       ok: true,
       json: async () => mockApiResponse
-    } as any);
+    } as unknown as Response);
 
     const result = await service.fetchCurrentWeather('New York', 'NY');
 
@@ -47,7 +47,7 @@ describe('WeatherstackService', () => {
     (global.fetch as jest.Mock).mockResolvedValue({
       ok: true,
       json: async () => mockErrorResponse
-    } as any);
+    } as unknown as Response);
 
     await expect(service.fetchCurrentWeather('InvalidCity', 'XX')).rejects.toThrow(
       'Input: Missing or invalid query.'
@@ -69,11 +69,11 @@ describe('WeatherstackService', () => {
       .mockResolvedValueOnce({
         ok: true,
         json: async () => mock615Error
-      } as any)
+      } as unknown as Response)
       .mockResolvedValueOnce({
         ok: true,
         json: async () => mockSuccess
-      } as any);
+      } as unknown as Response);
 
     const result = await service.fetchCurrentWeather('RetryCity', 'ST');
 
@@ -90,7 +90,7 @@ describe('WeatherstackService', () => {
     (global.fetch as jest.Mock).mockResolvedValue({
       ok: true,
       json: async () => mockResponse
-    } as any);
+    } as unknown as Response);
 
     // First call (hits API)
     await service.fetchCurrentWeather('CacheCity', 'CC');
@@ -105,7 +105,7 @@ describe('WeatherstackService', () => {
       ok: false,
       status: 500,
       statusText: 'Internal Server Error'
-    } as any);
+    } as unknown as Response);
 
     await expect(service.fetchCurrentWeather('FailCity', 'FC')).rejects.toThrow(
       'Weatherstack HTTP Error: 500 Internal Server Error'

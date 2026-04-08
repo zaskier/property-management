@@ -1,4 +1,9 @@
-import { WeatherstackResponse, CacheEntry, WeatherstackConfig } from '../types/weather.js';
+import {
+  WeatherstackResponse,
+  CacheEntry,
+  WeatherstackConfig,
+  RawWeatherData
+} from '../types/weather.js';
 
 export class WeatherstackService {
   private readonly apiKey: string;
@@ -41,22 +46,22 @@ export class WeatherstackService {
       if (!response.ok) {
         throw new Error(`Weatherstack HTTP Error: ${response.status} ${response.statusText}`);
       }
-
-      const apiData: any = await response.json();
+      const apiData = (await response.json()) as Record<string, unknown>;
 
       // Weatherstack quirk: Handle successful HTTP but logical failure
       if (apiData.success === false && apiData.error) {
+        const error = apiData.error as { code: number; info: string };
         // Retry logic for 615 (Generic Failure)
-        if (apiData.error.code === 615 && retryCount > 0) {
+        if (error.code === 615 && retryCount > 0) {
           console.warn(`[WeatherstackService] Retrying due to error 615 for ${city}`);
           return await this.fetchCurrentWeather(city, state, retryCount - 1);
         }
-        this.handleApiError(apiData.error);
+        this.handleApiError(error);
       }
 
       const data: WeatherstackResponse = {
-        ...apiData,
-        weather: apiData.current
+        ...(apiData as unknown as WeatherstackResponse),
+        weather: apiData.current as RawWeatherData
       };
 
       if (!data.location || !data.weather) {
