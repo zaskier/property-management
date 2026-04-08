@@ -1,4 +1,80 @@
 export const schema = `
+  "Astronomical data including sunrise, sunset, and moon cycles."
+  type Astro {
+    "The time of sunrise at the location."
+    sunrise: String
+    "The time of sunset at the location."
+    sunset: String
+    "The time of moonrise at the location."
+    moonrise: String
+    "The time of moonset at the location."
+    moonset: String
+    "The current phase of the moon."
+    moonPhase: String
+    "The percentage of the moon's surface illuminated by the sun."
+    moonIllumination: Int
+  }
+
+  "Environmental metrics related to air quality."
+  type AirQuality {
+    "Carbon Monoxide levels."
+    co: Float
+    "Nitrogen Dioxide levels."
+    no2: Float
+    "Ozone levels."
+    o3: Float
+    "Sulfur Dioxide levels."
+    so2: Float
+    "Particulate Matter 2.5 levels."
+    pm2_5: Float
+    "Particulate Matter 10 levels."
+    pm10: Float
+    "US EPA index for air quality."
+    usEpaIndex: Int
+    "UK Defra index for air quality."
+    gbDefraIndex: Int
+  }
+
+  "Detailed weather metrics at a specific observation time."
+  type Weather {
+    "The timestamp of the weather observation."
+    observationTime: String
+    "The current temperature in degrees Celsius."
+    temperature: Int
+    "Internal code for current weather condition."
+    weatherCode: Int
+    "List of URLs pointing to weather condition icons."
+    weatherIcons: [String!]
+    "List of textual descriptions for the current weather."
+    weatherDescriptions: [String!]
+    "The current wind speed."
+    windSpeed: Int
+    "The current wind direction degree."
+    windDegree: Int
+    "The current wind direction (e.g., 'SW')."
+    windDir: String
+    "Atmospheric pressure in millibars."
+    pressure: Int
+    "Precipitation amount in millimeters."
+    precip: Float
+    "Humidity percentage."
+    humidity: Int
+    "Cloud coverage percentage."
+    cloudcover: Int
+    "The 'feels like' temperature in degrees Celsius."
+    feelslike: Int
+    "Current UV index."
+    uvIndex: Int
+    "Visibility in kilometers."
+    visibility: Int
+    "Indicates if it is currently daytime at the location ('yes' or 'no')."
+    isDay: String
+    "Associated astronomical data."
+    astro: Astro
+    "Associated air quality metrics."
+    airQuality: AirQuality
+  }
+
   "Represents a real estate property and its associated data."
   type Property {
     "The unique identifier for the property."
@@ -12,7 +88,7 @@ export const schema = `
     "The postal code for the property."
     zipCode: String!
     "Current weather conditions at the property location, fetched from Weatherstack."
-    weather: JSON
+    weather: Weather
     "The latitude coordinate of the property city from weatherstack api."
     lat: Float
     "The longitude coordinate of the property city from weatherstack api."

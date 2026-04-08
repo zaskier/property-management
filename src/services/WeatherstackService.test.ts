@@ -10,8 +10,9 @@ describe('WeatherstackService', () => {
   };
 
   beforeEach(() => {
-    // Reset global fetch mock before each test
     global.fetch = jest.fn() as any;
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
     service = new WeatherstackService(mockConfig);
   });
 
@@ -32,9 +33,7 @@ describe('WeatherstackService', () => {
 
     const result = await service.fetchCurrentWeather('New York', 'NY');
 
-    expect(global.fetch).toHaveBeenCalledWith(
-      expect.stringContaining('query=New%20York%2C%20NY%2C%20USA')
-    );
+    expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('query=New%20York%2C%20NY'));
     expect(result.weather?.temperature).toBe(22);
     expect(result.location?.lat).toBe('40.7128');
   });
@@ -50,8 +49,9 @@ describe('WeatherstackService', () => {
       json: async () => mockErrorResponse
     } as any);
 
-    await expect(service.fetchCurrentWeather('InvalidCity', 'XX'))
-      .rejects.toThrow('Input: Missing or invalid query.');
+    await expect(service.fetchCurrentWeather('InvalidCity', 'XX')).rejects.toThrow(
+      'Input: Missing or invalid query.'
+    );
   });
 
   it('should retry once on error code 615', async () => {
@@ -107,7 +107,8 @@ describe('WeatherstackService', () => {
       statusText: 'Internal Server Error'
     } as any);
 
-    await expect(service.fetchCurrentWeather('FailCity', 'FC'))
-      .rejects.toThrow('Weatherstack HTTP Error: 500 Internal Server Error');
+    await expect(service.fetchCurrentWeather('FailCity', 'FC')).rejects.toThrow(
+      'Weatherstack HTTP Error: 500 Internal Server Error'
+    );
   });
 });

@@ -16,7 +16,19 @@ jest.unstable_mockModule('./services/WeatherstackService.js', () => ({
   WeatherstackService: jest.fn().mockImplementation(() => ({
     fetchCurrentWeather: jest.fn().mockResolvedValue({
       location: { lat: '34.0522', lon: '-118.2437' },
-      weather: { temperature: 25, weather_descriptions: ['Clear'] }
+      weather: {
+        temperature: 25,
+        weather_descriptions: ['Clear'],
+        astro: {
+          sunrise: '06:00 AM',
+          sunset: '08:00 PM',
+          moon_phase: 'Full Moon'
+        },
+        air_quality: {
+          co: '1.2',
+          'us-epa-index': '1'
+        }
+      }
     })
   }))
 }));
@@ -47,14 +59,26 @@ describe('App E2E', () => {
     await app.close();
   });
 
-  it('Mutation createProperty should call service and return property', async () => {
+  it('Mutation createProperty should call service and return property with nested typed weather', async () => {
     const propertyData = {
       id: 'uuid-123',
       city: 'Los Angeles',
       street: 'Sunset Blvd',
       state: 'CA',
       zipCode: '90001',
-      weather: { temperature: 25 },
+      weather: {
+        temperature: 25,
+        weather_descriptions: ['Clear'],
+        astro: {
+          sunrise: '06:00 AM',
+          sunset: '08:00 PM',
+          moon_phase: 'Full Moon'
+        },
+        air_quality: {
+          co: '1.2',
+          'us-epa-index': '1'
+        }
+      },
       lat: 34.0522,
       long: -118.2437
     };
@@ -72,7 +96,18 @@ describe('App E2E', () => {
         ) {
           id
           city
-          weather
+          weather {
+            temperature
+            weatherDescriptions
+            astro {
+              sunrise
+              moonPhase
+            }
+            airQuality {
+              co
+              usEpaIndex
+            }
+          }
         }
       }
     `;
@@ -85,7 +120,11 @@ describe('App E2E', () => {
 
     const result = JSON.parse(response.body);
     expect(response.statusCode).toBe(200);
-    expect(result.data.createProperty.city).toBe('Los Angeles');
+    expect(result.data.createProperty.weather.temperature).toBe(25);
+    expect(result.data.createProperty.weather.astro.sunrise).toBe('06:00 AM');
+    expect(result.data.createProperty.weather.astro.moonPhase).toBe('Full Moon');
+    expect(result.data.createProperty.weather.airQuality.co).toBe(1.2);
+    expect(result.data.createProperty.weather.airQuality.usEpaIndex).toBe(1);
   });
 
   it('Query properties should return list of properties', async () => {
